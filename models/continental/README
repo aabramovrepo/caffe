@@ -1,0 +1,40 @@
+
+ How to use AlexNet in Caffe on the own dataset
+
+- paths with training and validation data:
+
+/path/to/imagenet/train/n01440764/n01440764_10026.JPEG
+/path/to/imagenet/val/ILSVRC2012_val_00000001.JPEG
+
+
+- the training and validation input are described in train.txt and val.txt as text listing all the files and their labels.
+
+data/ilsvrc12/train.txt
+data/ilsvrc12/val.txt
+
+
+- set correct paths to training and validation images in the following script:
+
+examples/imagenet/create_imagenet.sh
+
+
+- create the leveldbs with examples/imagenet/create_imagenet.sh, note that examples/imagenet/ilsvrc12_train_leveldb and examples/imagenet/ilsvrc12_val_leveldb should not exist before the execution.
+
+
+- compute image mean calling ./examples/imagenet/make_imagenet_mean.sh, it will make data/ilsvrc12/imagenet_mean.binaryproto.
+
+
+- the network definition is in models/bvlc_reference_caffenet/train_val.prototxt. Note that the fc8 layer needs to be adjusted to the number of classes in the own dataset. batch_size needs to be set there according to the used gpu.
+
+
+- the solver is defined in models/bvlc_reference_caffenet/solver.prototxt.
+
+
+- run the training: ./build/tools/caffe train --solver=models/bvlc_reference_caffenet/solver.prototxt
+
+
+- run the training with weights loaded from the pre-trained AlexNet:
+
+./build/tools/caffe train --solver=models/bvlc_reference_caffenet/solver.prototxt --weights=models/bvlc_alexnet/bvlc_alexnet.caffemodel
+
+
