@@ -6,8 +6,8 @@ EXAMPLE=examples/lane_markings
 DATA=data/lane_markings
 TOOLS=build/tools
 
-TRAIN_DATA_ROOT=/home/contilinux/repository/caffe/data/lane_markings/train/
-#VAL_DATA_ROOT=/home/contilinux/repository/caffe/data/continental/val/
+TRAIN_DATA_ROOT=/home/alexey/repository/caffe/data/lane_markings/train/
+VAL_DATA_ROOT=/home/alexey/repository/caffe/data/lane_markings/val/
 
 # Set RESIZE=true to resize the images to 256x256. Leave as false if images have
 # already been resized using another tool.
@@ -27,12 +27,12 @@ if [ ! -d "$TRAIN_DATA_ROOT" ]; then
   exit 1
 fi
 
-#if [ ! -d "$VAL_DATA_ROOT" ]; then
-#  echo "Error: VAL_DATA_ROOT is not a path to a directory: $VAL_DATA_ROOT"
-#  echo "Set the VAL_DATA_ROOT variable in create_imagenet.sh to the path" \
-#       "where the ImageNet validation data is stored."
-#  exit 1
-#fi
+if [ ! -d "$VAL_DATA_ROOT" ]; then
+  echo "Error: VAL_DATA_ROOT is not a path to a directory: $VAL_DATA_ROOT"
+  echo "Set the VAL_DATA_ROOT variable in create_imagenet.sh to the path" \
+       "where the ImageNet validation data is stored."
+  exit 1
+fi
 
 echo "Creating train lmdb..."
 
@@ -41,17 +41,17 @@ GLOG_logtostderr=1 $TOOLS/convert_imageset \
     --resize_width=$RESIZE_WIDTH \
     --shuffle \
     $TRAIN_DATA_ROOT \
-    $DATA/train_mean.txt \
-    $EXAMPLE/ilsvrc12_train_lmdb
+    $DATA/train_db.txt \
+    $EXAMPLE/train_lmdb
 
-#echo "Creating val lmdb..."
+echo "Creating val lmdb..."
 
-#GLOG_logtostderr=1 $TOOLS/convert_imageset \
-#    --resize_height=$RESIZE_HEIGHT \
-#    --resize_width=$RESIZE_WIDTH \
-#    --shuffle \
-#    $VAL_DATA_ROOT \
-#    $DATA/val.txt \
-#    $EXAMPLE/ilsvrc12_val_lmdb
+GLOG_logtostderr=1 $TOOLS/convert_imageset \
+    --resize_height=$RESIZE_HEIGHT \
+    --resize_width=$RESIZE_WIDTH \
+    --shuffle \
+    $VAL_DATA_ROOT \
+    $DATA/val_db.txt \
+    $EXAMPLE/val_lmdb
 
 echo "Done."

@@ -1,4 +1,4 @@
-net: "models/lane_markings/train_val_conti_orig.prototxt"
+net: "models/lane_markings/train_val_conti_orig_db.prototxt"
 test_iter: 100
 test_interval: 1000
 
@@ -16,7 +16,7 @@ display: 20
 max_iter: 20000
 momentum: 0.9
 weight_decay: 0.0005
-snapshot: 1000
+snapshot: 3000
 snapshot_prefix: "models/lane_markings/lane_markings"
 
 # uncomment the following to default to CPU mode solving

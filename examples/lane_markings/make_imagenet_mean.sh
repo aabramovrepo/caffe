@@ -6,7 +6,7 @@ EXAMPLE=examples/lane_markings
 DATA=data/lane_markings
 TOOLS=build/tools
 
-$TOOLS/compute_image_mean $EXAMPLE/ilsvrc12_train_lmdb \
+$TOOLS/compute_image_mean $EXAMPLE/train_lmdb \
   $DATA/imagenet_mean.binaryproto
 
 echo "Done."

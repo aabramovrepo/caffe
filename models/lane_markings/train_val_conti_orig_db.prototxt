@@ -1,7 +1,7 @@
 name: "ContiLaneMarkingsCaffeNet"
 layer {
   name: "data"
-  type: "ImageData"
+  type: "Data"
   top: "data"
   top: "label"
   include {
@@ -9,20 +9,18 @@ layer {
   }
   transform_param {
     mirror: false
-    crop_size: 127
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+    crop_size: 227
+    mean_file: "data/lane_markings/imagenet_mean.binaryproto"
   }
-  image_data_param {
-    source: "data/lane_markings/train.txt"
+  data_param {
+    source: "examples/lane_markings/train_lmdb"
     batch_size: 256
-    new_height: 128
-    new_width: 128
-    shuffle: true
+    backend: LMDB
   }
 }
 layer {
   name: "data"
-  type: "ImageData"
+  type: "Data"
   top: "data"
   top: "label"
   include {
@@ -30,14 +28,13 @@ layer {
   }
   transform_param {
     mirror: false
-    crop_size: 127
-    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
+    crop_size: 227
+    mean_file: "data/lane_markings/imagenet_mean.binaryproto"
   }
-  image_data_param {
-    source: "data/lane_markings/test.txt"
+  data_param {
+    source: "examples/lane_markings/val_lmdb"
     batch_size: 50
-    new_height: 128
-    new_width: 128
+    backend: LMDB
   }
 }
 layer {
@@ -264,10 +261,10 @@ layer {
   }
 }
 layer {
-  name: "fc6-conti"
+  name: "fc6"
   type: "InnerProduct"
   bottom: "pool5"
-  top: "fc6-conti"
+  top: "fc6"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -291,14 +288,14 @@ layer {
 layer {
   name: "relu6"
   type: "ReLU"
-  bottom: "fc6-conti"
-  top: "fc6-conti"
+  bottom: "fc6"
+  top: "fc6"
 }
 layer {
   name: "drop6"
   type: "Dropout"
-  bottom: "fc6-conti"
-  top: "fc6-conti"
+  bottom: "fc6"
+  top: "fc6"
   dropout_param {
     dropout_ratio: 0.5
   }
@@ -306,7 +303,7 @@ layer {
 layer {
   name: "fc7"
   type: "InnerProduct"
-  bottom: "fc6-conti"
+  bottom: "fc6"
   top: "fc7"
   # Note that lr_mult can be set to 0 to disable any fine-tuning of this, and any other, layer
   param {

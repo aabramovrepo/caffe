@@ -14,7 +14,7 @@ layer {
   }
   image_data_param {
     source: "data/lane_markings/train.txt"
-    batch_size: 32
+    batch_size: 256
     new_height: 256
     new_width: 256
     shuffle: true
@@ -35,7 +35,7 @@ layer {
   }
   image_data_param {
     source: "data/lane_markings/test.txt"
-    batch_size: 32
+    batch_size: 50
     new_height: 256
     new_width: 256
   }
