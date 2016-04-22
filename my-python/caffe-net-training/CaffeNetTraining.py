@@ -39,43 +39,69 @@ def caffe_train():
     training_net = solver.net
     test_net = solver.test_nets[0]
 
+    print '------------------------------'
+    print '     Network layers:          '
+    print '------------------------------'
+
+    for layer_name, blob in training_net.blobs.iteritems():
+        print layer_name + '\t' + str(blob.data.shape)
+
+    #for layer_name, blob in test_net.blobs.iteritems():
+    #    print layer_name + '\t' + str(blob.data.shape)
+
+    outputs = solver.net.forward()
+
+    #outputs = solver.step(20)
+    #print outputs
+
+    return
+
     # forward/backward pass with weight update
     # solver.step(20)
 
-    # print 'solver.iter = ', solver.iter
-    # print 'solver.iter = ', solver.
-
     # run the solver until the last iteration
     solver.solve()
-    print 'solver.iter = ', solver.iter
+    print 'last solver iteration: ', solver.iter
 
     # solver.net.forward()
     # solver.test_nets[0].forward()
-    #    solver.solve()
-    # solver.step(2000)
 
 
 def caffe_test():
 
     # load a trained model
-    net = caffe.Net('val.prototxt', 'model_iter_100.caffemodel', caffe.TEST)
+    net = caffe.Net('val.prototxt', 'models/model_iter_5000.caffemodel', caffe.TEST)
+
+    print '------------------------------'
+    print '    Network initialized !     '
+    print '------------------------------'
+
+    net.forward()
+    #fc7 = net.blobs['fc7'].data
+    #print 'fc7 = ', fc7.sum()
+
+    return
 
     accuracy = 0
-    iterations_test = 1000
+    loss = 0
+    iterations_test = 100
 
     for i in range(iterations_test):
 
-        # one iteration
+        # one iteration (load the next mini-batch as defined in the net)
         outputs = net.forward()
         accuracy += net.blobs['accuracy'].data
+        loss += net.blobs['loss'].data
         #print outputs
         #print 'loss = ', net.blobs['loss'].data
         #print 'accuracy = ', net.blobs['accuracy'].data
 
     avg_accuracy = accuracy / iterations_test
+    avg_loss = loss / iterations_test
 
     print '------------------------------'
     print '   accuracy = ', avg_accuracy
+    print '   loss     = ', avg_loss
     print '------------------------------'
 
 
