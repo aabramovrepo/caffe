@@ -1,8 +1,8 @@
 train_net: "train.prototxt"
 test_net: "val.prototxt"
 
-test_iter: 100
-test_interval: 100
+test_iter: 500
+test_interval: 500
 
 # lr for fine-tuning should be lower than when starting from scratch
 base_lr: 0.00001
@@ -12,6 +12,9 @@ gamma: 0.1
 # stepsize should also be lower, as we're closer to being done
 stepsize: 20000
 display: 10
+
+# iterations number: how many batches
+# number of epoches: (<batch size> * <max_iter>) / <number of samples>
 max_iter: 5000
 #max_iter: 20000
 

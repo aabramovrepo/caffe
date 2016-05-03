@@ -5,11 +5,11 @@ import caffe
 
 def main():
 
-    caffe.set_device(0)
+    caffe.set_device(1)
     caffe.set_mode_gpu()
 
-    caffe_train()
-    #caffe_test()
+    #caffe_train()
+    caffe_test()
 
 
 def caffe_train():
@@ -25,6 +25,7 @@ def caffe_train():
     # load the solver
     solver = caffe.SGDSolver('solver.prototxt')
     # solver = caffe.get_solver('solver.prototxt')
+
 
     print '------------------------------'
     print '       solver loaded !        '
@@ -43,18 +44,21 @@ def caffe_train():
     print '     Network layers:          '
     print '------------------------------'
 
+
     for layer_name, blob in training_net.blobs.iteritems():
         print layer_name + '\t' + str(blob.data.shape)
 
     #for layer_name, blob in test_net.blobs.iteritems():
     #    print layer_name + '\t' + str(blob.data.shape)
 
-    outputs = solver.net.forward()
+    print '------------------------------'
+    print '     Forward pass...          '
+    print '------------------------------'
+
+    #outputs = solver.net.forward()
 
     #outputs = solver.step(20)
     #print outputs
-
-    return
 
     # forward/backward pass with weight update
     # solver.step(20)
@@ -76,11 +80,9 @@ def caffe_test():
     print '    Network initialized !     '
     print '------------------------------'
 
-    net.forward()
+    #net.forward()
     #fc7 = net.blobs['fc7'].data
     #print 'fc7 = ', fc7.sum()
-
-    return
 
     accuracy = 0
     loss = 0

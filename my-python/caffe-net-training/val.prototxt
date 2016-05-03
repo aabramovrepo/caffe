@@ -10,7 +10,7 @@ layer {
   transform_param {
     mirror: false
     crop_size: 227
-    mean_file: "../../data/lane_markings/imagenet_mean.binaryproto"
+#    mean_file: "../../data/lane_markings/imagenet_mean.binaryproto"
   }
   data_param {
     source: "../../examples/lane_markings/test_lmdb"
@@ -19,21 +19,9 @@ layer {
   }
 }
 layer {
-  name: "dataaugmentation"
-  type: "Python"
-  bottom: "data"
-  bottom: "label"
-  top: "dataaugmentation"
-  python_param {
-    module: "DataAugmentation"
-    layer: "DataAugmentationLayer"
-    param_str: "'num': 21"
-  }
-}
-layer {
   name: "conv1"
   type: "Convolution"
-  bottom: "dataaugmentation"
+  bottom: "data"
   top: "conv1"
   param {
     lr_mult: 1
