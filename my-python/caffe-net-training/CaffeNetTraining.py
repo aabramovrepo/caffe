@@ -1,15 +1,56 @@
 #! /usr/bin/env python
 
+#
+# Alexey Abramov <alexey.abramov@continental-corporation.com>
+#
+#
+#
+
 import caffe
+import glob
+import cv2
+import numpy as np
 
 
 def main():
 
+    #mean_data = caffe.io.  .io.read_mean('../../data/lane_markings')
+    #return
+
+    #compute_image_mean()
+    #return
+
     caffe.set_device(1)
     caffe.set_mode_gpu()
 
-    #caffe_train()
-    caffe_test()
+    caffe_train()
+    #caffe_test()
+
+
+def compute_image_mean():
+
+    # path with all training samples
+    file_list = glob.glob('/home/alexey/repository/caffe/data/lane_markings/train/*.png')
+
+    mean = np.zeros([256,256,3],dtype=float)
+    n = 0
+
+    for fname in file_list:
+        img = cv2.imread(fname,cv2.CV_LOAD_IMAGE_COLOR)
+        mean[...] += img[...]
+        n += 1
+
+        if n % 1000 == 0:
+            mean[...] /= n
+            n = 0
+
+    if n != 0:
+        mean[...] /= n
+
+    cv2.imwrite('mean-image.png', mean)
+
+    mean_scaled = cv2.resize(mean,(227,227),interpolation=cv2.INTER_NEAREST)
+    cv2.imwrite('mean-image-scaled.png', mean_scaled)
 
 
 def caffe_train():

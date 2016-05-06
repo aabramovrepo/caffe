@@ -26,6 +26,7 @@ class DataAugmentationLayer(caffe.Layer):
         params = eval(self.param_str)
         self.augmentation = np.array(params['augmentation'])
         self.mean_val = np.array(params['mean'])
+        self.mean_img = cv2.imread('mean-image-scaled.png',cv2.CV_LOAD_IMAGE_COLOR)
 
 
     def reshape(self, bottom, top):
@@ -34,10 +35,7 @@ class DataAugmentationLayer(caffe.Layer):
         #print '--- DataAugmentationLayer: reshape'
         #print
 
-        #print 'bottom[0].data = ', bottom[0].data.shape
         top[0].reshape(*bottom[0].shape)
-        #print 'top[0].data = ', top[0].data.shape
-
         top[0].data[...] = bottom[0].data[...]
 
 
@@ -56,7 +54,7 @@ class DataAugmentationLayer(caffe.Layer):
 
                 # do data augmentation for the whole batch
                 for ind in range(bottom[0].data.shape[0]):
-                    bottom[0].data[ind][...] *= random.uniform(0.1, 5.)
+                    bottom[0].data[ind][...] *= random.uniform(0.2,3.0)
                     bottom[0].data[ind][...][(bottom[0].data[ind][...] > 255.).nonzero()] = 255.
 
                     #a = np.zeros([227, 227, 3], dtype=float)
@@ -64,6 +62,12 @@ class DataAugmentationLayer(caffe.Layer):
                     #a[:, :, 1] = bottom[0].data[ind][1, :, :]
                     #a[:, :, 2] = bottom[0].data[ind][2, :, :]
                     #cv2.imwrite('/home/alexey/augmentation/aug-' + str(ind) + '.png', a)
+
+        # subtract the image mean for each image in the batch
+        for ind in range(bottom[0].data.shape[0]):
+            bottom[0].data[ind][0, :, :] -= self.mean_img[:, :, 0]
+            bottom[0].data[ind][1, :, :] -= self.mean_img[:, :, 1]
+            bottom[0].data[ind][2, :, :] -= self.mean_img[:, :, 2]
 
         top[0].reshape(*bottom[0].shape)
         top[0].data[...] = bottom[0].data[...]
