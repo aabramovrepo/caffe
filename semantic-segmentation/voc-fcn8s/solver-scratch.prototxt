@@ -1,0 +1,33 @@
+train_net: "train-scratch.prototxt"
+test_net: "val.prototxt"
+test_iter: 1111
+
+# make test net, but don't invoke it from the solver itself
+test_interval: 999999999
+display: 20
+average_loss: 20
+
+
+base_lr: 0.01     # begin training at a learning rate of 0.01 = 1e-2
+
+lr_policy: "step" # learning rate policy: drop the learning rate in "steps"
+                  # by a factor of gamma every stepsize iterations
+
+gamma: 0.1        # drop the learning rate by a factor of 10
+                  # (i.e., multiply it by a factor of gamma = 0.1)
+
+stepsize: 100000  # drop the learning rate every 100K iterations
+
+max_iter: 350000  # train for 350K iterations total
+
+momentum: 0.9
+
+# no gradient accumulation
+iter_size: 1
+weight_decay: 0.0005
+
+snapshot: 4000
+
+snapshot_prefix: "snapshot/train"
+test_initialization: false
+

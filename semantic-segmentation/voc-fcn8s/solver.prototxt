@@ -1,4 +1,4 @@
-train_net: "train.prototxt"
+train_net: "train-scratch.prototxt"
 test_net: "val.prototxt"
 test_iter: 1111
 
@@ -10,7 +10,8 @@ lr_policy: "fixed"
 
 # lr for unnormalized softmax
 #base_lr: 1e-14
-base_lr: 1e-10
+#base_lr: 1e-10
+base_lr: 1e-8
 
 # high momentum
 momentum: 0.99
@@ -21,7 +22,9 @@ max_iter: 100000
 weight_decay: 0.0005
 
 #snapshot: 4000
-snapshot: 500
+#snapshot: 500
+snapshot: 10
+
 snapshot_prefix: "snapshot/train"
 test_initialization: false
 

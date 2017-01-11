@@ -205,17 +205,22 @@ class CityscapesDataLayer(caffe.Layer):
         search_images = os.path.join(cityscapesPath, 'leftImg8bit', 'train', '*', '*_leftImg8bit.png')
         #search_labels = os.path.join(cityscapesPath, 'gtFine', 'train', '*', '*_gtFine_labelTrainIds.png')
         search_labels = os.path.join(cityscapesPath, 'gtFine', 'train', '*', '*_gtFine_labelIds.png')
+        search_disparity = os.path.join(cityscapesPath, 'disparity', 'train', '*', '*_disparity.png')
 
         self.idx = 0
         self.files_images = glob.glob(search_images)
         self.files_labels = glob.glob(search_labels)
+        self.files_disparity = glob.glob(search_disparity)
 
         self.files_images.sort()
         self.files_labels.sort()
+        self.files_disparity.sort()
+
         self.length = max(len(self.files_images),len(self.files_labels))
 
         print 'files_images = ', len(self.files_images)
         print 'files_labels = ', len(self.files_labels)
+        print 'files_disparity = ', len(self.files_disparity)
 
         #print '   ', self.files_images[1114]
         #print '   ', self.files_labels[1114]
@@ -225,8 +230,18 @@ class CityscapesDataLayer(caffe.Layer):
         print 'TRAIN reshape ...'
         print 'idx = ', self.idx
 
+        print 'files_images = ', len(self.files_images)
+        print 'files_labels = ', len(self.files_labels)
+        print 'files_disparity = ', len(self.files_disparity)
+
         self.data = self.load_image(self.files_images[self.idx])
+        #self.data = self.load_image_disparity(self.files_images[self.idx], self.files_disparity[self.idx])
         self.label = self.load_label(self.files_labels[self.idx])
+        #self.disparity = self.load_disparity(self.files_disparity[self.idx])
+
+        print 'data shape = ', self.data.shape
+        print 'label shape = ', self.label.shape
+        #print 'disparity shape = ', self.disparity.shape
 
         top[0].reshape(1, *self.data.shape)
         top[1].reshape(1, *self.label.shape)
@@ -290,7 +305,7 @@ class CityscapesDataLayer(caffe.Layer):
         middle_u = width_new / 2.
         middle_v = height_new / 2.
         cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
-        #cv2.imwrite('/home/alexey/augmentation/1.png', cropped)
+        #cv2.imwrite('input-image.png', cropped)
 
         #cv2.imwrite('/home/alexey/semantic-segmentation/cropped-image.png', cropped)
 
@@ -329,6 +344,7 @@ class CityscapesDataLayer(caffe.Layer):
         middle_u = width_new / 2.
         middle_v = height_new / 2.
         cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
+        #cv2.imwrite('input-label.png', cropped)
 
         #cv2.imwrite('/home/alexey/semantic-segmentation/2.png', dst)
         #label = np.uint8(dst)
@@ -344,6 +360,92 @@ class CityscapesDataLayer(caffe.Layer):
         print 'new label shape = ', label.shape
 
         return label
+
+    def load_disparity(self, fname):
+        """
+        Load label image as 1 x height x width integer array of label indices.
+        The leading singleton dimension is required by the loss.
+        """
+
+        print 'fname disparity = ', fname
+
+        img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        print img.shape
+        height, width = img.shape[:2]
+
+        height_new = height_scaled
+        width_new = int((width / float(height)) * height_new)
+        dst = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
+
+        middle_u = width_new / 2.
+        middle_v = height_new / 2.
+        cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
+        #cv2.imwrite('input-disparity.png', cropped)
+
+        # cv2.imwrite('/home/alexey/semantic-segmentation/2.png', dst)
+        #  label = np.uint8(dst)
+        #  label = np.float32(dst)
+        disparity = np.float32(cropped)
+        # cv2.imwrite('/home/alexey/semantic-segmentation/label.png', label)
+
+        print 'disparity shape = ', disparity.shape
+
+        disparity = disparity[np.newaxis, ...]
+        # label = label[..., np.newaxis]
+        # print 'new label shape = ', label.shape
+
+        return disparity
+
+    def load_image_disparity(self, fname_image, fname_disparity):
+        """
+        Load input image and preprocess for Caffe:
+        - cast to float
+        - switch channels RGB -> BGR
+        - subtract mean
+        - transpose to channel x height x width order
+        """
+
+        print 'fname image = ', fname_image
+        print 'fname disparity = ', fname_disparity
+
+        img = cv2.imread(fname_image, cv2.CV_LOAD_IMAGE_COLOR)
+        disparity_img = cv2.imread(fname_disparity, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        height, width = img.shape[:2]
+
+        height_new = height_scaled
+        width_new = int((width / float(height)) * height_new)
+
+        img_scaled = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
+        disparity_img_scaled = cv2.resize(disparity_img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
+
+        middle_u = width_new / 2.
+        middle_v = height_new / 2.
+        cropped_img = img_scaled[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
+        cropped_disparity_img = disparity_img_scaled[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
+
+        #cv2.imwrite('input-image.png', cropped_img)
+        #cv2.imwrite('input-disparity.png', cropped_disparity_img)
+
+        #in_ = np.array(cropped_img, dtype=np.float32)
+        #print 'in_ shape = ', in_.shape
+
+        in_ = np.zeros((800, 800, 4), dtype=np.float32)
+        print 'in_ shape = ', in_.shape
+
+        in_[:, :, 0] = np.float32(cropped_img[:, :, 0])
+        in_[:, :, 1] = np.float32(cropped_img[:, :, 1])
+        in_[:, :, 2] = np.float32(cropped_img[:, :, 2])
+        in_[:, :, 3] = np.float32(cropped_disparity_img[:, :])
+
+        # in_ = in_[:,:,::-1]
+        #  print 'in_ shape = ', in_.shape
+        #  cv2.imwrite('/home/alexey/augmentation/0-2.png', in_)
+        #
+        #  in_ -= self.mean
+        in_ = in_.transpose((2, 0, 1))
+        # print 'in_ shape = ', in_.shape
+
+        return in_
 
 
 class CityscapesDataLayerDeploy(caffe.Layer):

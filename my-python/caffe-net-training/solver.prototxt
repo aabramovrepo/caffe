@@ -1,5 +1,5 @@
-train_net: "train.prototxt"
-test_net: "val.prototxt"
+train_net: "my-python/caffe-net-training/train.prototxt"
+test_net: "my-python/caffe-net-training/val.prototxt"
 
 test_iter: 500
 test_interval: 500

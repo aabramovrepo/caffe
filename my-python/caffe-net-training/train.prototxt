@@ -13,7 +13,8 @@ layer {
 #    mean_file: "../../data/lane_markings/imagenet_mean.binaryproto"
   }
   data_param {
-    source: "../../examples/lane_markings/train_lmdb"
+#    source: "../../examples/lane_markings/train_lmdb"
+    source: "/media/ssd_drive/caffe/examples/lane_markings/train_lmdb"
 #    batch_size: 256
     batch_size: 208
     backend: LMDB

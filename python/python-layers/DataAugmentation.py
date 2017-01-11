@@ -77,3 +77,4 @@ class DataAugmentationLayer(caffe.Layer):
 
         print '--- DataAugmentationLayer: backward'
         pass
+
