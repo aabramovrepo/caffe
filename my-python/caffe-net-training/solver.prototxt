@@ -15,13 +15,13 @@ display: 10
 
 # iterations number: how many batches
 # number of epoches: (<batch size> * <max_iter>) / <number of samples>
+#max_iter: 1
 max_iter: 5000
 #max_iter: 20000
 
 momentum: 0.9
 weight_decay: 0.0005
 snapshot: 500
-#snapshot: 20
 
-snapshot_prefix: "model"
+snapshot_prefix: "my-python/caffe-net-training/models/model"
 
