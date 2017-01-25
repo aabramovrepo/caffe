@@ -32,8 +32,9 @@ def main():
     test_images.sort()
     test_disparity.sort()
 
+    # iterate over all test 
     for ind in range(len(test_images)):
-
+        
         img = prepare_input_image(test_images[ind], ind)
         disparity = prepare_input_disparity(test_disparity[ind], ind)
 
@@ -43,7 +44,7 @@ def main():
         print 'disparity max = ', disparity.max()
 
         in_ = np.array(img, dtype=np.uint8)
-
+        
         #in_ = np.zeros((800, 800, 4), dtype=np.float32)
         #in_[:, :, 0] = np.float32(img[:, :, 0])
         #in_[:, :, 1] = np.float32(img[:, :, 1])
@@ -60,7 +61,7 @@ def main():
 
         # run net and take argmax for prediction
         net.forward()
-        out = net.blobs['score'].data[0].argmax(axis=0)
+        out = net.blobs['score'].data[0].argmax(axis=0)        
         out = np.uint8(out)
 
         #print 'net.blobs = ', net.blobs['score'].data[0].shape
@@ -73,43 +74,42 @@ def main():
         # heat maps for each class
         #plot_output_signals(img, net.blobs['score'].data[0])
 
-        input_image = np.array(img, dtype=np.uint8)
+        #input_image = np.array(img, dtype=np.uint8)
         overlay = np.zeros(img.shape, dtype=np.uint8)
 
-        for trainID in label_ids:
+        for object_id in label_ids:
             # print
-            # print 'trainID = ', trainID
+            # print 'object_id = ', object_id
             # print
 
-            #  map from trainID to label
-            # name = labels.trainId2label[trainID].name
-            name = labels.id2label[trainID].name
-            category = labels.id2label[trainID].category
-            color = labels.id2label[trainID].color
+            #  map from object_id to label
+            #name = labels.trainId2label[object_id].name
+            name = labels.id2label[object_id].name
+            category = labels.id2label[object_id].category
+            color = labels.id2label[object_id].color
 
-            # print
-            # print "Name of label with trainID '{id}': {name}".format(id=trainID, name=name)
-            # print "   Category of label with ID '{id}': {category}".format(id=trainID, category=category)
-            # print 'color = ', color
+            #print
+            #print "Name of label with trainID '{id}': {name}".format(id=object_id, name=name)
+            #print "   Category of label with ID '{id}': {category}".format(id=object_id, category=category)
+            #print 'color = ', color
 
             object = np.zeros(img.shape, dtype=np.uint8)
-            # indices = (out == trainID).nonzero()
+            # indices = (out == object_id).nonzero()
             # print 'indices = ', indices
 
             object[:, :, 0] = color[2]
             object[:, :, 1] = color[1]
             object[:, :, 2] = color[0]
 
-            overlay[:, :, 0] += object[:, :, 0] * (out == trainID)
-            overlay[:, :, 1] += object[:, :, 1] * (out == trainID)
-            overlay[:, :, 2] += object[:, :, 2] * (out == trainID)
+            overlay[:, :, 0] += object[:, :, 0] * (out == object_id)
+            overlay[:, :, 1] += object[:, :, 1] * (out == object_id)
+            overlay[:, :, 2] += object[:, :, 2] * (out == object_id)
 
         alpha = 0.6
         cv2.addWeighted(overlay, alpha, img, 1.0-alpha, 0., img)
 
         # heat maps for each class
-        plot_output_signals(ind, input_image, net.blobs['score'].data[0], img, disparity)
-        #cv2.imwrite('output/infer-final-' + str(ind) + '.png', img)
+        plot_output_signals(ind, img, net.blobs['score'].data[0], img, disparity)
 
 
 def plot_output_signals(index, img, output, overlay, disparity):
@@ -169,8 +169,8 @@ def plot_output_signals(index, img, output, overlay, disparity):
 #    color_bar.outline.set_color('w')  # set colorbar box color
 #    color_bar.ax.yaxis.set_tick_params(color='w')  # set colorbar ticks color
 
-    plt.savefig('output/infer-final-' + str(index) + '.png', facecolor=fig.get_facecolor())
-    plt.close()
+    #plt.savefig('output/infer-final-' + str(index) + '.png', facecolor=fig.get_facecolor())
+    #plt.close()
 
 
 def plot_output_heat_map(row, col, number, data, title_str, scale_min, scale_max):
@@ -194,13 +194,13 @@ def plot_heat_map(title_str, data, scale_min, scale_max, fname):
 
 
 def prepare_input_image(fname, ind):
+    """ Downscale and crop input image to a pre-defined size"""
 
     img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_COLOR)
     height, width = img.shape[:2]
 
     height_new = 800
     width_new = int((width / float(height)) * height_new)
-
     dst = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
     #cv2.imwrite('output/infer-input-' + str(ind) + '.png', dst)
 
@@ -213,17 +213,20 @@ def prepare_input_image(fname, ind):
 
 
 def prepare_input_disparity(fname, ind):
+    """ Downscale and crop input disparity map to a pre-defined size"""
 
-    img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    height, width = img.shape[:2]
+    disparity = cv2.imread(fname, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    height, width = disparity.shape[:2]
 
     height_new = 800
     width_new = int((width / float(height)) * height_new)
-    dst = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
+    dst = cv2.resize(disparity, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
+    #plot_heat_map('Input disparity', disparity, disparity.min(), disparity.max(), 'output/disparity-input-' + str(ind))
 
     middle_u = width_new / 2.
     middle_v = height_new / 2.
     cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
+    #plot_heat_map('Cropped disparity', cropped, cropped.min(), cropped.max(), 'output/disparity-cropped-' + str(ind))
 
     return np.array(cropped, dtype=float)
 

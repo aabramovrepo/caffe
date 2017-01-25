@@ -19,8 +19,8 @@ setproctitle.setproctitle(os.path.basename(os.getcwd()))
 caffe.set_device(1)
 caffe.set_mode_gpu()
 
-#solver = caffe.SGDSolver('solver.prototxt')
-solver = caffe.SGDSolver('solver-scratch.prototxt')
+solver = caffe.SGDSolver('solver.prototxt')
+#solver = caffe.SGDSolver('solver-scratch.prototxt')
 
 #weights = '../models/fcn8s-heavy-pascal.caffemodel'
 #solver.net.copy_from(weights)
@@ -35,6 +35,8 @@ surgery.interp(solver.net, interp_layers)
 #print 'run solver ...'
 #solver.step(30)
 
-for _ in range(25):
-    solver.step(4000)
+solver.solve()
+
+#for _ in range(25):
+#    solver.step(4000)
 #    score.seg_tests(solver, False, val, layer='score')

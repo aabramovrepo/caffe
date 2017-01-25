@@ -154,9 +154,8 @@ class CityscapesDataLayerVal(caffe.Layer):
 
 class CityscapesDataLayer(caffe.Layer):
     """
-    Load (input image, label image) pairs from the SBDD extended labeling
-    of PASCAL VOC for semantic segmentation
-    one-at-a-time while reshaping the net to preserve dimensions.
+    Load (input image, label image) pairs from the Cityscapes dataset
+    for semantic segmentation one-at-a-time while reshaping the net to preserve dimensions.
 
     Use this to feed data to a fully convolutional network.
     """
@@ -218,37 +217,35 @@ class CityscapesDataLayer(caffe.Layer):
 
         self.length = max(len(self.files_images),len(self.files_labels))
 
-        print 'files_images = ', len(self.files_images)
-        print 'files_labels = ', len(self.files_labels)
-        print 'files_disparity = ', len(self.files_disparity)
+        #print 'files_images = ', len(self.files_images)
+        #print 'files_labels = ', len(self.files_labels)
+        #print 'files_disparity = ', len(self.files_disparity)
 
         #print '   ', self.files_images[1114]
         #print '   ', self.files_labels[1114]
 
     def reshape(self, bottom, top):
 
-        print 'TRAIN reshape ...'
-        print 'idx = ', self.idx
+        #print 'TRAIN reshape ...'
+        #print 'idx = ', self.idx
 
-        print 'files_images = ', len(self.files_images)
-        print 'files_labels = ', len(self.files_labels)
-        print 'files_disparity = ', len(self.files_disparity)
+        #print 'files_images = ', len(self.files_images)
+        #print 'files_labels = ', len(self.files_labels)
+        #print 'files_disparity = ', len(self.files_disparity)
 
         self.data = self.load_image(self.files_images[self.idx])
         #self.data = self.load_image_disparity(self.files_images[self.idx], self.files_disparity[self.idx])
         self.label = self.load_label(self.files_labels[self.idx])
         #self.disparity = self.load_disparity(self.files_disparity[self.idx])
 
-        print 'data shape = ', self.data.shape
-        print 'label shape = ', self.label.shape
+        #print 'data shape = ', self.data.shape
+        #print 'label shape = ', self.label.shape
         #print 'disparity shape = ', self.disparity.shape
 
         top[0].reshape(1, *self.data.shape)
         top[1].reshape(1, *self.label.shape)
 
     def forward(self, bottom, top):
-
-        print '   TRAIN forward ...'
 
         # assign output
         top[0].data[...] = self.data
@@ -261,23 +258,18 @@ class CityscapesDataLayer(caffe.Layer):
         #cv2.imwrite('input-image.png', img)
         #cv2.imwrite('input-label.png', label)
 
-        print '   data shape = ', top[0].data[...].shape
-        print '   label shape = ', top[1].data[...].shape
+        #print '   data shape = ', top[0].data[...].shape
+        #print '   label shape = ', top[1].data[...].shape
 
         # pick next input
-        if self.random:
-            self.idx = random.randint(0, self.length-1)
-        else:
-            self.idx += 1
-            if self.idx == self.length:
-                self.idx = 0
+        #if self.random:
+        #    self.idx = random.randint(0, self.length-1)
+        #else:
+        #    self.idx += 1
+        #    if self.idx == self.length:
+        #        self.idx = 0
 
     def backward(self, top, propagate_down, bottom):
-
-        print ' '
-        print '   TRAIN backward ...'
-        print ' '
-
         pass
 
     def load_image(self, fname):
@@ -302,8 +294,8 @@ class CityscapesDataLayer(caffe.Layer):
         #cv2.imwrite('/home/alexey/semantic-segmentation/1.png', dst)
         #cv2.imwrite('/home/alexey/augmentation/0.png', dst)
 
-        middle_u = width_new / 2.
-        middle_v = height_new / 2.
+        middle_u = int(width_new / 2.)
+        middle_v = int(height_new / 2.)
         cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
         #cv2.imwrite('input-image.png', cropped)
 
@@ -314,7 +306,7 @@ class CityscapesDataLayer(caffe.Layer):
 
         #cv2.imwrite('/home/alexey/augmentation/0-1.png', in_)
 
-        print 'in_ shape = ', in_.shape
+        #print 'in_ shape = ', in_.shape
         #in_ = in_[:,:,::-1]
         #print 'in_ shape = ', in_.shape
         #cv2.imwrite('/home/alexey/augmentation/0-2.png', in_)
@@ -331,18 +323,18 @@ class CityscapesDataLayer(caffe.Layer):
         Load label image as 1 x height x width integer array of label indices.
         The leading singleton dimension is required by the loss.
         """
-        print 'fname label = ', fname
+        #print 'fname label = ', fname
 
         img = cv2.imread(fname, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-        print img.shape
+        #print img.shape
         height, width = img.shape[:2]
 
         height_new = height_scaled
         width_new = int((width / float(height)) * height_new)
         dst = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
 
-        middle_u = width_new / 2.
-        middle_v = height_new / 2.
+        middle_u = int(width_new / 2.)
+        middle_v = int(height_new / 2.)
         cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
         #cv2.imwrite('input-label.png', cropped)
 
@@ -352,12 +344,12 @@ class CityscapesDataLayer(caffe.Layer):
         label = np.float32(cropped)
         #cv2.imwrite('/home/alexey/semantic-segmentation/label.png', label)
 
-        print 'label shape = ', label.shape
-        print 'label IDS: ', list(np.unique(label))
+        #print 'label shape = ', label.shape
+        #print 'label IDS: ', list(np.unique(label))
 
         label = label[np.newaxis, ...]
         #label = label[..., np.newaxis]
-        print 'new label shape = ', label.shape
+        #print 'new label shape = ', label.shape
 
         return label
 
@@ -377,8 +369,8 @@ class CityscapesDataLayer(caffe.Layer):
         width_new = int((width / float(height)) * height_new)
         dst = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
 
-        middle_u = width_new / 2.
-        middle_v = height_new / 2.
+        middle_u = int(width_new / 2.)
+        middle_v = int(height_new / 2.)
         cropped = dst[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
         #cv2.imwrite('input-disparity.png', cropped)
 
@@ -418,8 +410,8 @@ class CityscapesDataLayer(caffe.Layer):
         img_scaled = cv2.resize(img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
         disparity_img_scaled = cv2.resize(disparity_img, (width_new, height_new), interpolation=cv2.INTER_NEAREST)
 
-        middle_u = width_new / 2.
-        middle_v = height_new / 2.
+        middle_u = int(width_new / 2.)
+        middle_v = int(height_new / 2.)
         cropped_img = img_scaled[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
         cropped_disparity_img = disparity_img_scaled[middle_v - 400:middle_v + 400, middle_u - 400:middle_u + 400]
 
