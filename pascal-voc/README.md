@@ -1,7 +1,14 @@
 # Fully Convolutional Networks for Semantic Segmentation on PASCAL VOC
 
-Some info about the present structure
+This project has originated from the "Fully Convolutional Networks for Semantic Segmentation" by Berkeley.
 
+* inference.py -- inference for a pre-trained FCN Caffe model
+* voc_layers_alexey.py -- python layers for reading input images and ground truth segments
 
-**Note that this is a work in progress and the final, reference version is coming soon.**
-something
+## models
+
+Pre-trained FCN models.
+
+## voc-fcn8s
+
+FCN architectured for learning and deployment.
