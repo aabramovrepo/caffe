@@ -19,8 +19,8 @@ setproctitle.setproctitle(os.path.basename(os.getcwd()))
 caffe.set_device(1)
 caffe.set_mode_gpu()
 
-solver = caffe.SGDSolver('solver.prototxt')
-#solver = caffe.SGDSolver('solver-scratch.prototxt')
+#solver = caffe.SGDSolver('solver.prototxt')
+solver = caffe.SGDSolver('solver-scratch.prototxt')
 
 #weights = '../models/fcn8s-heavy-pascal.caffemodel'
 #solver.net.copy_from(weights)

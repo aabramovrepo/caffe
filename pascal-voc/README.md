@@ -7,8 +7,8 @@ This project has originated from the "Fully Convolutional Networks for Semantic 
 
 ## models
 
-Pre-trained FCN models.
+pre-trained FCN models
 
 ## voc-fcn8s
 
-FCN architectured for learning and deployment.
+FCN architectures for learning and deployment.
