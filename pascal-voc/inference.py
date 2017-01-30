@@ -4,6 +4,8 @@
 # The current script runs the pre-trained Caffe network on PASCAL VOC data
 #
 
+#from __future__ import (absolute_import, division, print_function, unicode_literals)
+
 import numpy as np
 from PIL import Image
 
@@ -12,9 +14,11 @@ import cv2
 import os
 import glob
 import sys
+import six
 
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+from matplotlib import colors as mcolors
 
 # PASCAL VOC classes
 # 0 - background
@@ -34,40 +38,61 @@ pascal_voc_2011 = {0: ('background', [0, 0, 0]), 1: ('aeroplane', [46, 131, 193]
 pascal_path = '/media/ssd_drive/PASCAL_VOC/TrainVal/VOCdevkit/VOC2011/'
 
 
+def plot_matplotlib_colors(main_fig,index):
+
+    n = 21
+    ncols = 1
+    nrows = 21
+
+    #fig.add_subplot(s_rows,s_cols,nmb)
+    fig, ax = main_fig.add_subplot(5,6,index)
+
+    #fig, ax = plt.subplots(figsize=(2,5))
+    X, Y = fig.get_dpi() * fig.get_size_inches()
+
+    # row height
+    h = Y / (nrows + 1)
+    # col width
+    w = X / ncols
+    
+    for key in pascal_voc_2011:
+        col = 0
+        row = key
+        y = Y - (row * h) - h
+
+        xi_line = w * (col+0.05)
+        xf_line = w * (col+0.25)
+        xi_text = w * (col+0.3)
+
+        ax.text(xi_text, y, pascal_voc_2011[key][0], fontsize=(h*0.8), horizontalalignment='left', verticalalignment='center', color='white')
+        
+        color = pascal_voc_2011[key][1]
+        ax.hlines(y + h*0.1, xi_line, xf_line, color=(color[0]/255.,color[1]/255.,color[2]/255.), linewidth=(h*0.6))
+
+    ax.set_xlim(0,X)
+    ax.set_ylim(0,Y)
+    ax.set_axis_off()
+
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
+    #plt.savefig('output/classes-colors.png', facecolor='black')
+
+
 def main():
     
-    '''nrow = 10
-    ncol = 3
-
-    fig = plt.figure(figsize=(4, 10)) 
-
-    gs = gridspec.GridSpec(nrow, ncol, width_ratios=[1, 1, 1],
-                           wspace=0.0, hspace=0.0, top=0.95, bottom=0.05, left=0.17, right=0.845) 
-
-    for i in range(10):
-        for j in range(3):
-            im = np.random.rand(28,28)
-            ax= plt.subplot(gs[i,j])
-            ax.imshow(im)
-            ax.set_xticklabels([])
-            ax.set_yticklabels([])
-
-    plt.savefig('output/test-plot.png')
-    return'''
-
     images = os.path.join(pascal_path, 'JPEGImages', '*.jpg')
     list_images = glob.glob(images)
 
-    caffe.set_device(0)
+    caffe.set_device(1)
     #caffe.set_mode_cpu()
     caffe.set_mode_gpu()
 
     # load net
     #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
-    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'models/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
+    #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'models/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
+    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s-atonce/snapshot/train_iter_20000.caffemodel', caffe.TEST)
 
     #for index in range(len(list_images)):
-    for index in range(5):
+    for index in range(1):
         run_inference(index, list_images[index], net)
 
 
@@ -123,11 +148,12 @@ def run_inference(index, fname, net):
 def plot_output_signals(index, img, segments, overlay, output):
     
     # subplot: rows x cols x plot number
-    s_rows = 4
+    s_rows = 5
     s_cols = 6
 
     #fig = plt.figure(figsize=(50,40), facecolor='black')
-    fig = plt.figure(figsize=(50,40))
+    #fig = plt.figure(figsize=(50,40))
+    fig = plt.figure(figsize=(20,10))
     fig.patch.set_facecolor('black')
 
     fig.add_subplot(s_rows,s_cols,1)
@@ -152,17 +178,21 @@ def plot_output_signals(index, img, segments, overlay, output):
     
     for key in pascal_voc_2011:
         
-        min_v = -15.
-        max_v = 15.
-        
         fig.add_subplot(s_rows,s_cols,nmb)
         plt.axis('off')
         plt.title(pascal_voc_2011[key][0], color='white')
         plt.imshow(output[key])
-        plt.clim(min_v, max_v)
+        plt.clim(output[key].min(), output[key].max())
+        cbar=plt.colorbar()
+        
+        # set white color for bar ticks
+        for t in cbar.ax.get_yticklabels(): 
+            t.set_color("w") 
         
         nmb += 1
 
+    plot_matplotlib_colors(fig,nmb)
+        
     plt.savefig('output/infer-final-' + str(index) + '.png', facecolor='black')
 
     

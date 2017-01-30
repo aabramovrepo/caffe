@@ -38,6 +38,10 @@ class VOCSegDataLayer_Alexey(caffe.Layer):
         self.mean = np.array(params['mean'])
         self.random = params.get('randomize', True)
         self.seed = params.get('seed', None)
+        
+        print ' voc_dir = ', self.voc_dir
+        print ' split = ', self.split
+        print ' mean = ', self.mean
 
         # two tops: data and label
         if len(top) != 2:
@@ -49,6 +53,9 @@ class VOCSegDataLayer_Alexey(caffe.Layer):
         # load indices for images and labels
         split_f  = '{}/ImageSets/Segmentation/{}.txt'.format(self.voc_dir,
                 self.split)
+        
+        print 'split_f = ', split_f
+        
         self.indices = open(split_f, 'r').read().splitlines()
         self.idx = 0
 

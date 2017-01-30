@@ -404,10 +404,10 @@ layer {
   }
 }
 layer {
-  name: "fc6"
+  name: "fc6_1"
   type: "Convolution"
   bottom: "pool5"
-  top: "fc6"
+  top: "fc6_1"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -426,23 +426,23 @@ layer {
 layer {
   name: "relu6"
   type: "ReLU"
-  bottom: "fc6"
-  top: "fc6"
+  bottom: "fc6_1"
+  top: "fc6_1"
 }
 layer {
   name: "drop6"
   type: "Dropout"
-  bottom: "fc6"
-  top: "fc6"
+  bottom: "fc6_1"
+  top: "fc6_1"
   dropout_param {
     dropout_ratio: 0.5
   }
 }
 layer {
-  name: "fc7"
+  name: "fc7_1"
   type: "Convolution"
-  bottom: "fc6"
-  top: "fc7"
+  bottom: "fc6_1"
+  top: "fc7_1"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -461,14 +461,14 @@ layer {
 layer {
   name: "relu7"
   type: "ReLU"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7_1"
+  top: "fc7_1"
 }
 layer {
   name: "drop7"
   type: "Dropout"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7_1"
+  top: "fc7_1"
   dropout_param {
     dropout_ratio: 0.5
   }
@@ -476,7 +476,7 @@ layer {
 layer {
   name: "score_fr"
   type: "Convolution"
-  bottom: "fc7"
+  bottom: "fc7_1"
   top: "score_fr"
   param {
     lr_mult: 1
@@ -508,9 +508,24 @@ layer {
   }
 }
 layer {
+  name: "scale_pool4"
+  type: "Scale"
+  bottom: "pool4"
+  top: "scale_pool4"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.01
+    }
+  }
+}
+layer {
   name: "score_pool4"
   type: "Convolution"
-  bottom: "pool4"
+  bottom: "scale_pool4"
   top: "score_pool4"
   param {
     lr_mult: 1
@@ -563,9 +578,24 @@ layer {
   }
 }
 layer {
+  name: "scale_pool3"
+  type: "Scale"
+  bottom: "pool3"
+  top: "scale_pool3"
+  param {
+    lr_mult: 0
+  }
+  scale_param {
+    filler {
+      type: "constant"
+      value: 0.0001
+    }
+  }
+}
+layer {
   name: "score_pool3"
   type: "Convolution"
-  bottom: "pool3"
+  bottom: "scale_pool3"
   top: "score_pool3"
   param {
     lr_mult: 1
