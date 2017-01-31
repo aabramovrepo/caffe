@@ -89,10 +89,10 @@ def main():
     # load net
     #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
     #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'models/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
-    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s-atonce/snapshot/train_iter_20000.caffemodel', caffe.TEST)
+    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s-atonce/snapshot/train_iter_100000.caffemodel', caffe.TEST)
 
     #for index in range(len(list_images)):
-    for index in range(1):
+    for index in range(30):
         run_inference(index, list_images[index], net)
 
 
@@ -191,7 +191,7 @@ def plot_output_signals(index, img, segments, overlay, output):
         
         nmb += 1
 
-    plot_matplotlib_colors(fig,nmb)
+    #plot_matplotlib_colors(fig,nmb)
         
     plt.savefig('output/infer-final-' + str(index) + '.png', facecolor='black')
 
