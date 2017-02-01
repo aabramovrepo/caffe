@@ -1,7 +1,9 @@
-
 #
 # Python dictionary with PASCAL VOC classes
 #
+
+# path to PASCAL VOC 2011 dataset
+pascal_voc_path = '/media/ssd_drive/PASCAL_VOC/TrainVal/VOCdevkit/VOC2011/'
 
 pascal_voc_2011 = {0: ('background', [0, 0, 0]), 1: ('aeroplane', [46, 131, 193]), 2: ('bicycle', [84, 139, 108]),
                    3: ('bird', [190, 242, 73]), 4: ('boat', [158, 29, 0]), 5: ('bottle', [112, 67, 115]),
