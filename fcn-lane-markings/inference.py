@@ -45,9 +45,9 @@ def plot_matplotlib_colors(main_fig,index):
         row = key
         y = Y - (row * h) - h
 
-        xi_line = w * (col+0.05)
-        xf_line = w * (col+0.25)
-        xi_text = w * (col+0.3)
+        xi_line = w*(col+0.05)
+        xf_line = w*(col+0.25)
+        xi_text = w*(col+0.3)
 
         ax.text(xi_text, y, pascal_voc_dict.pascal_voc_2011[key][0], fontsize=(h*0.8), horizontalalignment='left', verticalalignment='center', color='white')
         
@@ -71,19 +71,24 @@ def main():
 
     # load pre-trained FCN caffe net
     #net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/lane_markings/train_iter_1000.caffemodel', caffe.TEST)
-    net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/train_iter_1000.caffemodel', caffe.TEST)
+    net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/train_iter_4000.caffemodel', caffe.TEST)
 
     # do inference
-    #idx = 15
-    #f_image = classes.lane_markings_path + '/color_rect_' + str(idx) + '.png'
-    #f_gt = classes.lane_markings_path + '/color_rect_' + str(idx) + '_roi.png'
+    indices_train = [0,100,104,109,11,12,15,19,1,23,24,27,29,2,31,34,3,52,5,70,7,82,88,92,95,98,9]
     
-    f_image = classes.lanes_path + 'val/color_rect_10.png'
-    f_gt = classes.lanes_path + 'val/color_rect_10_roi.png'
-    
-    run_inference(0, f_image, f_gt, net)
+#    for idx in indices_train:
+#        f_img = classes.lanes_path + 'train/images/color_rect_' + str(idx) + '.png'
+#        f_label = classes.lanes_path + 'train/labels/color_rect_' + str(idx) + '_roi.png'
+#        run_inference(idx, f_img, f_label, net)
+ 
+    indices_val = [0,10]
 
+    for idx in indices_val:
+        f_img = classes.lanes_path + 'val/images/color_rect_' + str(idx) + '.png'
+        f_label = classes.lanes_path + 'val/labels/color_rect_' + str(idx) + '_roi.png'
+        run_inference(idx, f_img, f_label, net)    
 
+        
 def run_inference(index, f_image, f_gt, net):
     '''Do inference for a given input image'''
     
@@ -93,6 +98,8 @@ def run_inference(index, f_image, f_gt, net):
     # load image, switch to BGR, subtract mean, and make dims C x H x W for Caffe
     im = Image.open(f_image)
     in_ = np.array(im, dtype=np.float32)
+    
+    in_ = cv2.resize(in_, (0,0), fx=0.1, fy=0.1)
     
     input_img = np.zeros(in_.shape, dtype=np.uint8)
     input_img[...] = in_[...]
@@ -138,13 +145,15 @@ def run_inference(index, f_image, f_gt, net):
     # create image with ground truth labels
     _gt = cv2.imread(f_gt,0)
     gt = np.asarray(_gt)
-    
-    print 'gt labels = ', np.unique(gt)
+    gt = cv2.resize(gt, (0,0), fx=0.1, fy=0.1)
     
     #gt[(gt == 255).nonzero()] = 1
     gt[(gt == 50).nonzero()] = 1
     gt[(gt == 100).nonzero()] = 2
     gt[(gt == 150).nonzero()] = 3
+    gt[(gt > 3).nonzero()] = 0
+    
+    print 'gt labels = ', np.unique(gt)
 
     # create image with predicted segments
     gt_segments = np.zeros(input_img.shape, dtype=np.uint8)
@@ -202,6 +211,9 @@ def plot_output_signals(index, img, segments, overlay, output, ground_truth):
         plt.axis('off')
         plt.title(classes.lanes_classes[key][0], color='white')
         plt.imshow(output[key])
+        
+        print 'heat map shape = ', output[key].shape
+        
         plt.clim(output[key].min(), output[key].max())
 #        cbar=plt.colorbar()
         

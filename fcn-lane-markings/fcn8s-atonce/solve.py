@@ -42,5 +42,4 @@ surgery.interp(solver.net, interp_layers)
 #    score.seg_tests(solver, False, val, layer='score')
 
 for _ in range(1):
-    solver.step(2000)
-    #score.seg_tests(solver, False, val, layer='score')
+    solver.step(4000)

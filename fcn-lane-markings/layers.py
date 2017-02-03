@@ -283,13 +283,15 @@ class SegDataLayerTrain(caffe.Layer):
         - transpose to channel x height x width order
         """
 
-        f_img = classes.lanes_path + 'train/color_rect_' + str(idx) + '.png'
+        f_img = classes.lanes_path + 'train/images/color_rect_' + str(idx) + '.png'
         #f_img = classes.lanes_path + 'train/color_rect_0.png'
         #print 'f_img = ', f_img
         _im = cv2.imread(f_img,1)
-        im = np.asarray(_im)
-        #print 'im = ', im
         
+        _im_small = cv2.resize(_im, (0,0), fx=0.1, fy=0.1)
+        #print '_im_small.shape = ', _im_small.shape
+
+        im = np.asarray(_im_small)
         in_ = np.array(im, dtype=np.float32)
         
         # save input image
@@ -307,17 +309,23 @@ class SegDataLayerTrain(caffe.Layer):
         The leading singleton dimension is required by the loss.
         """
         
-        f_label = classes.lanes_path + 'train/color_rect_' + str(idx) + '_roi.png'
+        f_label = classes.lanes_path + 'train/labels/color_rect_' + str(idx) + '_roi.png'
         #f_label = classes.lanes_path + 'train/color_rect_0_roi.png'
         #print 'f_label = ', f_label
         
         _label = cv2.imread(f_label,0)
-        label = np.asarray(_label)
+        
+        _label_small = cv2.resize(_label, (0,0), fx=0.1, fy=0.1)
+        label = np.asarray(_label_small)
+        
+        #print 'label shape = ', label.shape
+        #print 'label unique = ', np.unique(label)
         
         #label[(label == 255).nonzero()] = 1
         label[(label == 50).nonzero()] = 1
         label[(label == 100).nonzero()] = 2
         label[(label == 150).nonzero()] = 3
+        label[(label > 3).nonzero()] = 0
         
         #print 'label unique = ', np.unique(label)
         
