@@ -74,13 +74,11 @@ def main():
     # load pre-trained FCN caffe net
     #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
     #net = caffe.Net('voc-fcn8s/deploy.prototxt', 'models/fcn8s-heavy-pascal.caffemodel', caffe.TEST)
-    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s-atonce/snapshot/train_iter_300.caffemodel', caffe.TEST)
+    net = caffe.Net('voc-fcn8s/deploy.prototxt', 'voc-fcn8s-atonce/snapshot/train_iter_150000.caffemodel', caffe.TEST)
 
-    run_inference(0, '/media/ssd_drive/SBD_dataset/dataset/img/2010_000132.jpg', net)
-    
     #for index in range(len(list_images)):
-    #for index in range(3):
-        #run_inference(index, list_images[index], net)
+    for index in range(20):
+        run_inference(index, list_images[index], net)
 
 
 def run_inference(index, fname, net):

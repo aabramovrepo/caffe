@@ -1,4 +1,8 @@
 
+#
+# Caffe Python layers for loading images and labels for both training and validation
+#
+
 import caffe
 
 import numpy as np
@@ -249,12 +253,12 @@ class SBDDSegDataLayer_Alexey(caffe.Layer):
         top[1].data[...] = self.label
 
         # pick next input
-#        if self.random:
-#            self.idx = random.randint(0, len(self.indices)-1)
-#        else:
-#            self.idx += 1
-#            if self.idx == len(self.indices):
-#                self.idx = 0
+        if self.random:
+            self.idx = random.randint(0, len(self.indices)-1)
+        else:
+            self.idx += 1
+            if self.idx == len(self.indices):
+                self.idx = 0
 
 
     def backward(self, top, propagate_down, bottom):
@@ -273,8 +277,8 @@ class SBDDSegDataLayer_Alexey(caffe.Layer):
         - transpose to channel x height x width order
         """
 
-        print ''
-        print 'load_image: ', '{}/img/{}.jpg'.format(self.sbdd_dir, idx)
+        #print ''
+        #print 'load_image: ', '{}/img/{}.jpg'.format(self.sbdd_dir, idx)
         
         im = Image.open('{}/img/{}.jpg'.format(self.sbdd_dir, idx))
         in_ = np.array(im, dtype=np.float32)
@@ -294,8 +298,8 @@ class SBDDSegDataLayer_Alexey(caffe.Layer):
         The leading singleton dimension is required by the loss.
         """
         
-        print ''
-        print 'load_label: ', '{}/cls/{}.mat'.format(self.sbdd_dir, idx)
+        #print ''
+        #print 'load_label: ', '{}/cls/{}.mat'.format(self.sbdd_dir, idx)
         
         import scipy.io
         mat = scipy.io.loadmat('{}/cls/{}.mat'.format(self.sbdd_dir, idx))

@@ -74,8 +74,8 @@ def main():
     net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/train_iter_4000.caffemodel', caffe.TEST)
 
     # do inference
-    indices_train = [0,100,104,109,11,12,15,19,1,23,24,27,29,2,31,34,3,52,5,70,7,82,88,92,95,98,9]
-    
+#    indices_train = [0,100,104,109,11,12,15,19,1,23,24,27,29,2,31,34,3,52,5,70,7,82,88,92,95,98,9]
+
 #    for idx in indices_train:
 #        f_img = classes.lanes_path + 'train/images/color_rect_' + str(idx) + '.png'
 #        f_label = classes.lanes_path + 'train/labels/color_rect_' + str(idx) + '_roi.png'
@@ -174,48 +174,51 @@ def plot_output_signals(index, img, segments, overlay, output, ground_truth):
     s_rows = 2
     s_cols = 4
 
-    fig = plt.figure(figsize=(20,5))
+    fig = plt.figure(figsize=(30,10))
     fig.patch.set_facecolor('black')
+#    fig.tight_layout()
 
     # plot input image
     fig.add_subplot(s_rows,s_cols,1)
+    fig.tight_layout()
     plt.title('Input image', color='white')
     plt.axis('off')
     plt.imshow(img)
 
     # plot ground truth
     fig.add_subplot(s_rows,s_cols,2)
+    fig.tight_layout()
     plt.title('Ground truth', color='white')
     plt.axis('off')
     plt.imshow(ground_truth)
 
     # plot predicted segments
     fig.add_subplot(s_rows,s_cols,3)
+    fig.tight_layout()
     plt.title('Predicted segments', color='white')
     plt.axis('off')
     plt.imshow(segments)
 
     # plot image overlay with predicted segments
     fig.add_subplot(s_rows,s_cols,4)
+    fig.tight_layout()
     plt.title('Overlay',color='white')
     plt.axis('off')
     plt.imshow(overlay)
 
     nmb = 5
-    n = 0
-    
+    min_v = min([output[key].min() for key in classes.lanes_classes])
+    max_v = max([output[key].max() for key in classes.lanes_classes])
+
     # plot heat maps for all classes the network was trained on
     for key in classes.lanes_classes:
-        
         fig.add_subplot(s_rows,s_cols,nmb)
+        fig.tight_layout()
         plt.axis('off')
         plt.title(classes.lanes_classes[key][0], color='white')
-        plt.imshow(output[key])
-        
-        print 'heat map shape = ', output[key].shape
-        
-        plt.clim(output[key].min(), output[key].max())
-#        cbar=plt.colorbar()
+        plt.imshow(output[key])        
+        plt.clim(min_v, max_v)
+        #cbar=plt.colorbar()
         
         # set white color for bar ticks
 #        for t in cbar.ax.get_yticklabels(): 

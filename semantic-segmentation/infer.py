@@ -155,14 +155,18 @@ def plot_output_signals(index, img, output, overlay, disparity):
     overlay_img[:, :, 2] = overlay[:, :, 0]
     plt.imshow(overlay_img)
 
-    # classes for heat map visualization
-    list_classes = [1, 6, 7, 11, 13, 17, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
-    s_number = s_cols + 1
 
-    for class_ind in range(len(list_classes)):
-        plot_output_heat_map(s_rows, s_cols, s_number, output[list_classes[class_ind]],
-                             labels.id2label[list_classes[class_ind]].name, scale_min, scale_max)
-        s_number += 1
+    for label in labels.labels:
+       print 'label = ', label
+
+    # classes for heat map visualization
+#    list_classes = [1, 6, 7, 11, 13, 17, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+#    s_number = s_cols + 1
+
+#    for class_ind in range(len(list_classes)):
+#        plot_output_heat_map(s_rows, s_cols, s_number, output[list_classes[class_ind]],
+#                             labels.id2label[list_classes[class_ind]].name, scale_min, scale_max)
+#        s_number += 1
 
 #    color_bar = plt.colorbar()
 #    plt.setp(plt.getp(color_bar.ax.axes, 'yticklabels'), color='w')  # set colorbar

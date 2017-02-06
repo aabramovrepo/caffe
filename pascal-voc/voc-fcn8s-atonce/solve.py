@@ -36,6 +36,10 @@ surgery.interp(solver.net, interp_layers)
 #val = np.loadtxt('../data/segvalid11.txt', dtype=str)
 val = np.loadtxt('../data/pascal/seg11valid.txt', dtype=str)
 
-for _ in range(75):
-    solver.step(4000)
-    score.seg_tests(solver, False, val, layer='score')
+#for _ in range(75):
+#    solver.step(4000)
+#    score.seg_tests(solver, False, val, layer='score')
+
+for _ in range(1):
+    solver.step(1)
+    #score.seg_tests(solver, False, val, layer='score')
