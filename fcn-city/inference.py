@@ -74,7 +74,7 @@ def main():
 
     # load pre-trained FCN caffe net
     #net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/lane_markings/train_iter_1000.caffemodel', caffe.TEST)
-    net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/train_iter_2000.caffemodel', caffe.TEST)
+    net = caffe.Net('fcn8s-atonce/deploy.prototxt', 'fcn8s-atonce/snapshot/train_iter_40000.caffemodel', caffe.TEST)
 
 
     # load indices for images and labels
@@ -93,12 +93,12 @@ def main():
     files_disparity.sort()
     val_length = max(len(files_images),len(files_labels))
 
-#    for idx in range(10):
-#        run_inference(idx, files_images[idx], files_labels[idx], net)
+    for idx in range(100):
+        run_inference(idx, files_images[idx], files_labels[idx], net)
 
-    f_img = '/media/ssd_drive/Cityscapes_dataset/leftImg8bit/train/monchengladbach/monchengladbach_000000_009930_leftImg8bit.png'
-    f_label = '/media/ssd_drive/Cityscapes_dataset/gtFine/train/monchengladbach/monchengladbach_000000_009930_gtFine_labelIds.png'
-    run_inference(0, f_img, f_label, net)
+#    f_img = '/media/ssd_drive/Cityscapes_dataset/leftImg8bit/train/monchengladbach/monchengladbach_000000_009930_leftImg8bit.png'
+#    f_label = '/media/ssd_drive/Cityscapes_dataset/gtFine/train/monchengladbach/monchengladbach_000000_009930_gtFine_labelIds.png'
+#    run_inference(0, f_img, f_label, net)
 
         
 def run_inference(index, f_image, f_gt, net):
