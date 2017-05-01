@@ -194,7 +194,6 @@ class SegDataLayerTrain(caffe.Layer):
         print 'cityscapesPath = ', cityscapesPath
 
         search_images = os.path.join(cityscapesPath, 'leftImg8bit', 'train', '*', '*_leftImg8bit.png')
-        #search_labels = os.path.join(cityscapesPath, 'gtFine', 'train', '*', '*_gtFine_labelTrainIds.png')
         search_labels = os.path.join(cityscapesPath, 'gtFine', 'train', '*', '*_gtFine_labelIds.png')
         search_disparity = os.path.join(cityscapesPath, 'disparity', 'train', '*', '*_disparity.png')
 
@@ -212,7 +211,6 @@ class SegDataLayerTrain(caffe.Layer):
         if self.random:
             random.seed(self.seed)
             self.idx = random.randint(0, self.length-1)
-            #self.idx = random.randint(0, len(self.indices)-1)
 
 
     def reshape(self, bottom, top):
@@ -227,9 +225,6 @@ class SegDataLayerTrain(caffe.Layer):
 
 
     def forward(self, bottom, top):
-
-#        print ''
-#        print 'forward: ...'
 
         # assign output
         top[0].data[...] = self.data
@@ -262,8 +257,8 @@ class SegDataLayerTrain(caffe.Layer):
 
         #print 'image: ', self.files_images[idx]
 
-        _im = cv2.imread('/media/ssd_drive/Cityscapes_dataset/leftImg8bit/train/monchengladbach/monchengladbach_000000_009930_leftImg8bit.png',1)
-        #_im = cv2.imread(self.files_images[idx],1)
+        #_im = cv2.imread('/media/ssd_drive/Cityscapes_dataset/leftImg8bit/train/monchengladbach/monchengladbach_000000_009930_leftImg8bit.png',1)
+        _im = cv2.imread(self.files_images[idx],1)
         _im_small = cv2.resize(_im, (0,0), fx=downsample_factor, fy=downsample_factor)
 
         im = np.asarray(_im_small)
@@ -287,8 +282,8 @@ class SegDataLayerTrain(caffe.Layer):
 
         #print 'labels: ', self.files_labels[idx]
         
-        _label = cv2.imread('/media/ssd_drive/Cityscapes_dataset/gtFine/train/monchengladbach/monchengladbach_000000_009930_gtFine_labelIds.png',0)
-        #_label = cv2.imread(self.files_labels[idx],0)
+        #_label = cv2.imread('/media/ssd_drive/Cityscapes_dataset/gtFine/train/monchengladbach/monchengladbach_000000_009930_gtFine_labelIds.png',0)
+        _label = cv2.imread(self.files_labels[idx],0)
         _label_small = cv2.resize(_label, (0,0), fx=downsample_factor, fy=downsample_factor)
         label = np.asarray(_label_small)
         #label = np.asarray(_label)
