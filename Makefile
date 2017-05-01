@@ -58,7 +58,7 @@ GTEST_SRC := src/gtest/gtest-all.cpp
 TOOL_SRCS := $(shell find tools -name "*.cpp")
 # EXAMPLE_SRCS are the source files for the example binaries
 EXAMPLE_SRCS := $(shell find examples -name "*.cpp")
-# BUILD_INCLUDE_DIR contains any generated header files we want to include.
+# BUILD__DIR contains any generated header files we want to include.
 BUILD_INCLUDE_DIR := $(BUILD_DIR)/src
 # PROTO_SRCS are the protocol buffer definitions
 PROTO_SRC_DIR := src/$(PROJECT)/proto
@@ -172,18 +172,20 @@ endif
 CUDA_LIB_DIR += $(CUDA_DIR)/lib
 
 INCLUDE_DIRS += $(BUILD_INCLUDE_DIR) ./src ./include
+INCLUDE_DIRS += /usr/include/hdf5/serial/
 ifneq ($(CPU_ONLY), 1)
 	INCLUDE_DIRS += $(CUDA_INCLUDE_DIR)
 	LIBRARY_DIRS += $(CUDA_LIB_DIR)
 	LIBRARIES := cudart cublas curand
 endif
 
-LIBRARIES += glog gflags protobuf boost_system boost_filesystem m hdf5_hl hdf5
+#LIBRARIES += glog gflags protobuf boost_system boost_filesystem m hdf5_hl hdf5 
+LIBRARIES += glog gflags protobuf boost_system boost_filesystem m hdf5_serial_hl hdf5_serial
 
 # handle IO dependencies
 USE_LEVELDB ?= 1
 USE_LMDB ?= 1
-USE_OPENCV ?= 1
+USE_OPENCV ?= 3
 
 ifeq ($(USE_LEVELDB), 1)
 	LIBRARIES += leveldb snappy
